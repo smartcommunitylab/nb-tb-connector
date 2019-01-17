@@ -8,8 +8,8 @@ import it.smartcommunitylab.nbtb.model.Device;
 
 @Repository
 public interface DeviceRepository extends MongoRepository<Device, String> {
-	@Query(value="{loraApplicationId:?0, loraDevEUI:?1}")
-	Device findByLoraDevEUI(String appId, String devEUI);
+	@Query(value="{nbAe:?0, nbMsIsdn:?1}")
+	Device findByNbMsIsdn(String ae, String msIsdn);
 	
 	@Query(value="{tbTenantId:?0, tbId:?1}")
 	Device findByTbId(String tenantId, String deviceId);

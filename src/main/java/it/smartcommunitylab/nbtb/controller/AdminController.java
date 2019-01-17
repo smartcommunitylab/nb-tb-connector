@@ -27,11 +27,11 @@ public class AdminController {
 		dataManager.storeTbUser();
 	}
 	
-	@GetMapping(value = "/admin/lora/device/refresh")
-	public void alignLoraDevices() throws Exception {
+	@GetMapping(value = "/admin/tb/device/refresh")
+	public void alignTbDevices() throws Exception {
 		if(logger.isInfoEnabled()) {
-			logger.info("alignLoraDevices: align Lora devices");
+			logger.info("alignTbDevices: align Lora devices");
 		}
-		
+		dataManager.storeTbDevices();
 	}
 }
