@@ -40,7 +40,7 @@ public class TestTb {
     String[] split_string = jwtToken.split("\\.");
     String base64EncodedHeader = split_string[0];
     String base64EncodedBody = split_string[1];
-    String base64EncodedSignature = split_string[2];
+    //String base64EncodedSignature = split_string[2];
 
     System.out.println("~~~~~~~~~ JWT Header ~~~~~~~");
     String header = new String(Base64.getDecoder().decode(base64EncodedHeader));
@@ -79,5 +79,14 @@ public class TestTb {
 		dataManager.storeTbUser();
 	}
 	
+	@Test
+	public void StringToHex() {
+		StringBuilder sb = new StringBuilder();
+		String test = "{temperature:24.5}";
+		for (byte b : test.getBytes()) {
+			sb.append(String.format("%02x", b));
+		}
+		System.out.println(sb.toString());
+	}
 	
 }

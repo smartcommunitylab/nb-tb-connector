@@ -35,25 +35,27 @@ public class NBIoTController {
 	@Autowired
 	private DeviceRepository deviceRepository;
 
-	@PostMapping(value = "/api/nb/{tbCredentialsId}")
+	@PostMapping(value = "/api/nb/{nbSubscriptionId}")
 	public void storeData(
 			@RequestBody String nbData,
-			@PathVariable String tbCredentialsId,
+			@PathVariable String nbSubscriptionId,
 			HttpServletRequest request, 
 			HttpServletResponse response) throws Exception {
 		JsonNode rootNode = dataManager.getJsonNode(nbData);
 		String sur = rootNode.get("m2m:sgn").get("sur").asText();
 		String[] strings = sur.split("/");
-		String ae = strings[1];
-		String msIsdn = strings[2];
+		String ae = strings[2];
+		String msIsdn = strings[3];
 		Device device = deviceRepository.findByNbMsIsdn(ae, msIsdn);
 		if(device == null) {
-			logger.warn(String.format("device not found: %s - %s", ae, msIsdn));
-			throw new EntityNotFoundException("device not found");
+			String error = String.format("device not found: %s - %s", ae, msIsdn); 
+			logger.warn(error);
+			throw new EntityNotFoundException(error);
 		}
-		if(!device.getTbCredentialsId().equals(tbCredentialsId)) {
-			logger.warn(String.format("credentials not verified: %s - %s - %s", ae, msIsdn, tbCredentialsId));
-			throw new EntityNotFoundException("credentials not verified");
+		if(!device.getNbSubscriptionId().equals(nbSubscriptionId)) {
+			String error = String.format("subscription not verified: %s - %s - %s", ae, msIsdn, nbSubscriptionId);
+			logger.warn(error);
+			throw new EntityNotFoundException(error);
 		}
 		dataManager.sendTelemetry(device, rootNode);
 	}

@@ -69,7 +69,7 @@ public class ThingsBoardManager {
 		ExtLogin login = new ExtLogin();
 		login.setUsername(user);
 		login.setPassword(password);
-		String json = HTTPUtils.post(address, login, null, null, null, null);
+		String json = HTTPUtils.post(address, login, null, null, null, null, null);
 		JsonNode node = mapper.readTree(json);
 		String jwtToken = node.get("token").asText();
 		String jwtBody = Utils.getJWTBody(jwtToken);
@@ -242,7 +242,7 @@ public class ThingsBoardManager {
 		String json = mapper.writeValueAsString(telemetryNode);
 		
 		String address = endpoint + "api/v1/" + device.getTbCredentialsId() + "/telemetry";
-		HTTPUtils.post(address, json, token, headerKey, null, null);
+		HTTPUtils.post(address, json, token, headerKey, null, null, null);
 	}
 
 }

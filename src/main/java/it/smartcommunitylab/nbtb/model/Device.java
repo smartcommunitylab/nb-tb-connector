@@ -13,6 +13,7 @@ public class Device {
 	private String tbCredentialsType;
 	private String nbAe;
 	private String nbMsIsdn;
+	private String nbSubscriptionId;
 	
 	public String getTbTenantId() {
 		return tbTenantId;
@@ -67,6 +68,12 @@ public class Device {
 	}
 	public void setNbMsIsdn(String nbMsIsdn) {
 		this.nbMsIsdn = nbMsIsdn;
+	}
+	public String getNbSubscriptionId() {
+		return nbSubscriptionId;
+	}
+	public void setNbSubscriptionId(String nbSubscriptionId) {
+		this.nbSubscriptionId = nbSubscriptionId;
 	}
 	
 }

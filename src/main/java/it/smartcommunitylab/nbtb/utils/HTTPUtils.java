@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Base64;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -96,7 +97,7 @@ public class HTTPUtils {
 	}
 	
 	public static String post(String address, Object content, String token, String headerKey,
-			String basicAuthUser, String basicAuthPassowrd) throws Exception {
+			String basicAuthUser, String basicAuthPassowrd, Map<String, String> headers) throws Exception {
 		StringBuffer response = new StringBuffer();
 
 		URL url = new URL(address);
@@ -118,6 +119,12 @@ public class HTTPUtils {
 		
 		if (token != null) {
 			conn.setRequestProperty(headerKey, "Bearer " + token);
+		}
+		
+		if(headers != null) {
+			for(String key : headers.keySet()) {
+				conn.setRequestProperty(key, headers.get(key));
+			}
 		}
 
 		String contentString = null;
