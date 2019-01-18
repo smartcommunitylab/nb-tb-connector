@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import it.smartcommunitylab.nbtb.ext.nb.NBIoTManager;
 import it.smartcommunitylab.nbtb.ext.tb.ThingsBoardManager;
 import it.smartcommunitylab.nbtb.model.Customer;
 import it.smartcommunitylab.nbtb.model.Device;
@@ -33,6 +34,9 @@ public class DataManager {
 	
 	@Autowired
 	private ThingsBoardManager tbManager;
+	
+	@Autowired
+	private NBIoTManager nbIoTManager; 
 	
 	@Autowired
 	private CustomerRepository customerRepository;
@@ -136,13 +140,24 @@ public class DataManager {
 		for (Device device : devices) {
 			Device deviceDb = deviceRepository.findByTbId(device.getTbTenantId(), device.getTbId());
 			if(deviceDb == null) {
-				deviceRepository.save(device);
+				deviceDb = deviceRepository.save(device);
 			} else {
 				deviceDb.setName(device.getName());
 				deviceDb.setType(device.getType());
 				deviceDb.setTbCredentialsId(device.getTbCredentialsId());
 				deviceDb.setTbCredentialsType(device.getTbCredentialsType());
 				deviceRepository.save(deviceDb);
+			}
+			if(Utils.isNotEmpty(deviceDb.getNbAe()) && Utils.isNotEmpty(deviceDb.getNbMsIsdn()) &&
+					Utils.isEmpty(deviceDb.getNbSubscriptionId())) {
+				//add subscription
+				try {
+					String subscriptionId = nbIoTManager.addSubscription(deviceDb.getNbAe(), deviceDb.getNbMsIsdn());
+					deviceDb.setNbSubscriptionId(subscriptionId);
+					deviceRepository.save(deviceDb);
+				} catch (Exception e) {
+					logger.error(String.format("storeTbDevices error in add subscription:%s", e.getMessage()));
+				}
 			}
 		}
 	}
