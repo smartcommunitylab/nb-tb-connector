@@ -1,6 +1,9 @@
 package it.smartcommunitylab.nbtb.core;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +52,8 @@ public class DataManager {
 	
 	private ObjectMapper mapper = null;
 	
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+	
 	@PostConstruct
 	public void init() throws Exception {
 		mapper = new ObjectMapper();
@@ -71,9 +76,8 @@ public class DataManager {
 			if(Utils.isNotEmpty(device.getTbTenantId()) &&
 					Utils.isNotEmpty(device.getTbId())) {
 				//send telemetry
-				//TODO get data timestamp
-				long timestamp = System.currentTimeMillis();
 				JsonNode objectNode = convertUplink(rootNode);
+				long timestamp = objectNode.get("timestamp").asLong();
 				tbManager.sendTelemetry(device, objectNode, timestamp);
 				//TODO move log to debug level
 				if(logger.isInfoEnabled()) {
@@ -95,10 +99,19 @@ public class DataManager {
 		String con =  rootNode.get("m2m:sgn").get("nev").get("rep").get("m2m:cin").get("con").asText();
 		String sur = rootNode.get("m2m:sgn").get("sur").asText();
 		String ct = rootNode.get("m2m:sgn").get("nev").get("rep").get("m2m:cin").get("ct").asText();
+		Date date = new Date();
+		try {
+			date = sdf.parse(ct);
+		} catch (ParseException e) {
+			if(logger.isInfoEnabled()) {
+				logger.info("convertUplink - error in parsing ct: %s", sur);
+			}			
+		}
 		ObjectNode uplinkNode = mapper.createObjectNode();
 		uplinkNode.put("sur", sur);
 		uplinkNode.put("ct", ct);
 		uplinkNode.put("con", con);
+		uplinkNode.put("timestamp", date.getTime());
 		return uplinkNode;
 	}
 
