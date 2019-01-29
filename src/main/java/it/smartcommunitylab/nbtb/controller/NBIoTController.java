@@ -41,23 +41,32 @@ public class NBIoTController {
 			@PathVariable String nbSubscriptionId,
 			HttpServletRequest request, 
 			HttpServletResponse response) throws Exception {
-		JsonNode rootNode = dataManager.getJsonNode(nbData);
-		String sur = rootNode.get("m2m:sgn").get("sur").asText();
-		String[] strings = sur.split("/");
-		String ae = strings[2];
-		String msIsdn = strings[3];
-		Device device = deviceRepository.findByNbMsIsdn(ae, msIsdn);
-		if(device == null) {
-			String error = String.format("device not found: %s - %s", ae, msIsdn); 
-			logger.warn(error);
-			throw new EntityNotFoundException(error);
+		try {
+			JsonNode rootNode = dataManager.getJsonNode(nbData);
+			String sur = rootNode.get("m2m:sgn").get("sur").asText();
+			String[] strings = sur.split("/");
+			String ae = strings[2];
+			String msIsdn = strings[3];
+			Device device = deviceRepository.findByNbMsIsdn(ae, msIsdn);
+			if(device == null) {
+				String error = String.format("device not found: %s - %s", ae, msIsdn); 
+				logger.warn(error);
+				throw new EntityNotFoundException(error);
+			}
+			if(!device.getNbSubscriptionId().equals(nbSubscriptionId)) {
+				String error = String.format("subscription not verified: %s - %s - %s", ae, msIsdn, nbSubscriptionId);
+				logger.warn(error);
+				throw new EntityNotFoundException(error);
+			}
+			dataManager.sendTelemetry(device, rootNode);			
+		} catch (Exception e) {
+			if(e instanceof EntityNotFoundException) {
+				throw e;
+			} else {
+				logger.error(String.format("storeData error:%s", e.getMessage()));
+				throw e;
+			}
 		}
-		if(!device.getNbSubscriptionId().equals(nbSubscriptionId)) {
-			String error = String.format("subscription not verified: %s - %s - %s", ae, msIsdn, nbSubscriptionId);
-			logger.warn(error);
-			throw new EntityNotFoundException(error);
-		}
-		dataManager.sendTelemetry(device, rootNode);
 	}
 	
 	@ExceptionHandler({EntityNotFoundException.class})

@@ -30,7 +30,7 @@ public class AdminController {
 	@GetMapping(value = "/admin/tb/device/refresh")
 	public void alignTbDevices() throws Exception {
 		if(logger.isInfoEnabled()) {
-			logger.info("alignTbDevices: align Lora devices");
+			logger.info("alignTbDevices: align TB devices");
 		}
 		dataManager.storeTbDevices();
 	}
