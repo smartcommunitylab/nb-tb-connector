@@ -61,7 +61,7 @@ public class ThingsBoardManager {
 		if(token == null) {
 			return true;
 		}
-		return (System.currentTimeMillis() > tokenExp);
+		return (System.currentTimeMillis() > (tokenExp - 100));
 	}
 	
 	public synchronized String getToken() throws Exception {
