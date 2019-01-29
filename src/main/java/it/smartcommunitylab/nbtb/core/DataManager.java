@@ -83,7 +83,7 @@ public class DataManager {
 				tbManager.sendTelemetry(device, objectNode, timestamp);
 				//TODO move log to debug level
 				if(logger.isInfoEnabled()) {
-					logger.info(String.format("sendTelemetry - sent data to device: %s / %s", ae, msIsdn));
+					logger.info(String.format("sendTelemetry - sent data to device: %s / %s / %s", ae, msIsdn, objectNode.toString()));
 				}				
 			} else {
 				if(logger.isInfoEnabled()) {
