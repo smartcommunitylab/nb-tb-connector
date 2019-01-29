@@ -62,7 +62,7 @@ public class DataManager {
 		mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
 		mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
 	}
 	
 	public JsonNode getJsonNode(String json) throws IOException {
