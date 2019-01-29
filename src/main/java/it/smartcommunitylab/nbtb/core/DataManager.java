@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
 
@@ -61,6 +62,7 @@ public class DataManager {
 		mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
 		mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 	
 	public JsonNode getJsonNode(String json) throws IOException {
