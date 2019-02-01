@@ -196,6 +196,7 @@ public class ThingsBoardManager {
 					
 					String addressCred = endpoint + "api/device/" + id + "/credentials";
 					String jsonCred = HTTPUtils.get(addressCred, token, headerKey, null, null);
+					logger.info("getDevicesByTenant - credentials:" + jsonCred);
 					JsonNode credNode = mapper.readTree(jsonCred);
 					String credentialsType = credNode.get("credentialsType").asText();
 					String credentialsId = credNode.get("credentialsId").asText();
@@ -211,6 +212,7 @@ public class ThingsBoardManager {
 					try {
 						String addressAttr = endpoint + "api/v1/" + credentialsId + "/attributes";
 						String jsonAttr = HTTPUtils.get(addressAttr, token, headerKey, null, null);
+						logger.info("getDevicesByTenant - attributes:" + jsonAttr);
 						JsonNode attrNode = mapper.readTree(jsonAttr);
 						String nbMsIsdn = attrNode.get("nbMsIsdn").asText();
 						String nbAe = attrNode.get("nbAe").asText();
@@ -221,6 +223,7 @@ public class ThingsBoardManager {
 							device.setNbAe(nbAe);
 						}
 					} catch (Exception e) {
+						logger.warn(String.format("getDevicesByTenant - error in get attributes:%s / %s", id, e.getMessage()));
 					}
 					result.add(device);
 				}
