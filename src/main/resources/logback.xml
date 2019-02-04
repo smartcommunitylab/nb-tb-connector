@@ -31,7 +31,7 @@
     <appender-ref ref="STDOUT" />
   </root>
 
-  <logger name="it.smartcommunitylab" level="INFO" additivity="false">
+  <logger name="it.smartcommunitylab" level="DEBUG" additivity="false">
     <appender-ref ref="FILE" />
     <appender-ref ref="STDOUT" />
   </logger>	
