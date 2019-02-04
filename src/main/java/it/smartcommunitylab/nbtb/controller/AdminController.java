@@ -17,21 +17,13 @@ public class AdminController {
 	
 	@GetMapping(value = "/admin/init")
 	public void initDataset() throws Exception {
-		if(logger.isInfoEnabled()) {
-			logger.info("initDataset");
-		}
-		// get TB user
-		if(logger.isInfoEnabled()) {
-			logger.info("initDataset: get TB user");
-		}
+		logger.info("initDataset: get TB user");
 		dataManager.storeTbUser();
 	}
 	
 	@GetMapping(value = "/admin/tb/device/refresh")
 	public void alignTbDevices() throws Exception {
-		if(logger.isInfoEnabled()) {
-			logger.info("alignTbDevices: align TB devices");
-		}
+		logger.info("alignTbDevices: align TB devices");
 		dataManager.storeTbDevices();
 	}
 }

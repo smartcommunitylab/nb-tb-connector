@@ -81,19 +81,12 @@ public class DataManager {
 				JsonNode objectNode = convertUplink(rootNode);
 				long timestamp = objectNode.get("timestamp").asLong();
 				tbManager.sendTelemetry(device, objectNode, timestamp);
-				//TODO move log to debug level
-				if(logger.isInfoEnabled()) {
-					logger.info(String.format("sendTelemetry - sent data to device: %s / %s / %s", ae, msIsdn, objectNode.toString()));
-				}				
+				logger.debug("sendTelemetry - sent data to device:{} / {} / {}", ae, msIsdn, objectNode.toString());
 			} else {
-				if(logger.isInfoEnabled()) {
-					logger.info(String.format("sendTelemetry - device not connected to TB: %s / %s", ae, msIsdn));
-				}
+				logger.info("sendTelemetry - device not connected to TB:{} / {}", ae, msIsdn);
 			}
 		} catch (Exception e) {
-			if(logger.isInfoEnabled()) {
-				logger.info(String.format("sendTelemetry exception:%s", e.getMessage()));
-			}
+			logger.info("sendTelemetry exception:{}", e.getMessage());
 		}
 	}
 	
@@ -105,9 +98,7 @@ public class DataManager {
 		try {
 			date = sdf.parse(ct);
 		} catch (ParseException e) {
-			if(logger.isInfoEnabled()) {
-				logger.info("convertUplink - error in parsing ct: %s", sur);
-			}			
+			logger.info("convertUplink - error in parsing ct:{}", sur);
 		}
 		ObjectNode uplinkNode = mapper.createObjectNode();
 		uplinkNode.put("sur", sur);
@@ -171,7 +162,7 @@ public class DataManager {
 					deviceDb.setNbSubscriptionId(subscriptionId);
 					deviceRepository.save(deviceDb);
 				} catch (Exception e) {
-					logger.error(String.format("storeTbDevices error in add subscription:%s", e.getMessage()));
+					logger.error("storeTbDevices error in add subscription:{}", e.getMessage());
 				}
 			}
 		}
@@ -179,13 +170,11 @@ public class DataManager {
 	
 	@Scheduled(cron = "${cronexp}")
 	public void refreshTbDevices() {
-		if(logger.isInfoEnabled()) {
-			logger.info("refreshTbDevices started");
-		}
+		logger.info("refreshTbDevices started");
 		try {
 			storeTbDevices();
 		} catch (Exception e) {
-			logger.error(String.format("refreshTbDevices exception:%s", e.getMessage()));
+			logger.error("refreshTbDevices exception:{}", e.getMessage());
 		}
 	}
 

@@ -53,9 +53,7 @@ public class NBIoTManager {
 		headers.put("Accept", "application/json");
 		
 		HTTPUtils.post(address, contentString, null, null, user, password, headers);
-		if(logger.isInfoEnabled()) {
-			logger.info(String.format("addSubscription:%s - %s - %s", ae, msIsdn, subscriptionId));
-		}
+		logger.info("addSubscription:{} / {} / {}", ae, msIsdn, subscriptionId);
 		return subscriptionId;
 	}
 
