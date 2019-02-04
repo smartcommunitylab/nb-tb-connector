@@ -123,9 +123,7 @@ public class ThingsBoardManager {
 			}
 			hasNext = rootNode.get("hasNext").asBoolean();
 		} while (hasNext);
-		if(logger.isInfoEnabled()) {
-			logger.info("getCustomers:" + result.size());
-		}
+		logger.info("getCustomers:{}", result.size());
 		return result;
 	}
 	
@@ -196,7 +194,6 @@ public class ThingsBoardManager {
 					
 					String addressCred = endpoint + "api/device/" + id + "/credentials";
 					String jsonCred = HTTPUtils.get(addressCred, token, headerKey, null, null);
-					logger.info("getDevicesByTenant - credentials:" + jsonCred);
 					JsonNode credNode = mapper.readTree(jsonCred);
 					String credentialsType = credNode.get("credentialsType").asText();
 					String credentialsId = credNode.get("credentialsId").asText();
@@ -210,28 +207,32 @@ public class ThingsBoardManager {
 					device.setTbCredentialsType(credentialsType);
 
 					try {
-						String addressAttr = endpoint + "api/v1/" + credentialsId + "/attributes";
+						String addressAttr = endpoint + "api/v1/" + credentialsId + "/attributes?" 
+								+ "sharedKeys=nbAe,nbMsIsdn";
 						String jsonAttr = HTTPUtils.get(addressAttr, token, headerKey, null, null);
-						logger.info("getDevicesByTenant - attributes:" + jsonAttr);
+						logger.debug("getDevicesByTenant - attributes{}", jsonAttr);
 						JsonNode attrNode = mapper.readTree(jsonAttr);
-						String nbMsIsdn = attrNode.get("nbMsIsdn").asText();
-						String nbAe = attrNode.get("nbAe").asText();
-						if(Utils.isNotEmpty(nbMsIsdn)) {
-							device.setNbMsIsdn(nbMsIsdn);
-						}
-						if(Utils.isNotEmpty(nbAe)) {
-							device.setNbAe(nbAe);
+						if(attrNode.has("shared")) {
+							JsonNode sharedNode = attrNode.get("shared");
+							if(sharedNode.has("nbAe") && sharedNode.has("nbMsIsdn")) {
+								String nbMsIsdn = sharedNode.get("nbMsIsdn").asText();
+								String nbAe = sharedNode.get("nbAe").asText();
+								if(Utils.isNotEmpty(nbMsIsdn)) {
+									device.setNbMsIsdn(nbMsIsdn);
+								}
+								if(Utils.isNotEmpty(nbAe)) {
+									device.setNbAe(nbAe);
+								}
+							}
 						}
 					} catch (Exception e) {
-						logger.warn(String.format("getDevicesByTenant - error in get attributes:%s / %s", id, e.getMessage()));
+						logger.warn("getDevicesByTenant - error in get attributes:{} / {}", id, e.getMessage());
 					}
 					result.add(device);
 				}
 			}
 		} while (hasNext);
-		if(logger.isInfoEnabled()) {
-			logger.info(String.format("getDevicesByTenant:%s", result.size()));
-		}
+		logger.info("getDevicesByTenant:{}", result.size());
 		return result;
 	}
 	
