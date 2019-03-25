@@ -11,7 +11,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jk_dev', keyFileVariable: 'key')]) {
           script {
             rc = sh(script: "./build.sh", returnStatus: true)
             sh "echo \"exit code is : ${rc}\""
@@ -29,52 +29,13 @@ pipeline {
       }
     }
     stage('Test') {
-      when {
-                expression { !skipRemainingStages }
-      }
       steps {
         echo 'Testing..'
-        withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jk_dev', keyFileVariable: 'key')]) {
-          withCredentials([file(credentialsId: 'nb-tb-connector-env', variable: 'env')]){
-            withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-              script {
-                rc = sh(script: "./test.sh", returnStatus: true)
-                sh "echo \"exit code is : ${rc}\""
-                if (rc != 0)
-                {
-                    sh "echo 'exit code is NOT zero'"
-                    skipRemainingStages = true
-                }
-                else
-                {
-                    sh "echo 'exit code is zero'"
-                }
-              }
-            }
-          }
-        }
       }
     }
     stage('Deploy') {
-      when {
-                expression { !skipRemainingStages }
-      }
       steps {
-        withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jk_dev', keyFileVariable: 'key')]) {
-          script {
-            rc = sh(script: "./deploy.sh", returnStatus: true)
-            sh "echo \"exit code is : ${rc}\""
-            if (rc != 0)
-            {
-                sh "echo 'exit code is NOT zero'"
-                skipRemainingStages = true
-            }
-            else
-            {
-                sh "echo 'exit code is zero'"
-            }
-          }
-        }
+          echo 'Deploying....'
       }
     }
   }
