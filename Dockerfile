@@ -3,10 +3,11 @@ COPY . /tmp
 WORKDIR /tmp
 RUN mvn install
 
-FROM store/oracle/serverjre:8
+FROM openjdk:8-alpine
 ARG VER=0.1
 ENV FOLDER=/tmp/target
 ENV APP=nb-tb-connector-${VER}.jar
+RUN apk update && apk add curl && rm -rf /var/cache/apk/*
 COPY --from=mvn ${FOLDER}/${APP} /tmp/target/
 WORKDIR /tmp/target/
-CMD [ "sh", "-c", "java -Xms32m -Xmx64m -jar ${APP}" ]
+CMD [ "sh", "-c", "java -jar ${APP}" ]
